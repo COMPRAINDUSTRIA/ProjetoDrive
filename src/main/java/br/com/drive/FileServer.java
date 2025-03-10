@@ -1,5 +1,6 @@
 package br.com.drive;
 
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -19,6 +20,7 @@ public class FileServer {
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
+                System.out.println("Cliente conectado: " + clientSocket.getInetAddress());
                 new ClientHandler(clientSocket).start();
             }
         } catch (IOException e) {
@@ -40,11 +42,14 @@ public class FileServer {
                 // Autenticação de usuário
                 String username = in.readLine();
                 String password = in.readLine();
+                System.out.println("Tentativa de login: " + username + " / " + password);  // Mensagem de depuração
                 if (!authenticate(username, password)) {
                     out.println("Login inválido");
+                    System.out.println("Login falhou para usuário: " + username);  // Mensagem de depuração
                     return;
                 }
                 out.println("Login bem-sucedido");
+                System.out.println("Login bem-sucedido para usuário: " + username);  // Mensagem de depuração
 
                 // Criação de pastas, se não existirem
                 File userDir = new File("armazenamento/" + username);
@@ -58,6 +63,7 @@ public class FileServer {
                 // Espera comandos do cliente
                 String command;
                 while ((command = in.readLine()) != null) {
+                    System.out.println("Comando recebido: " + command);  // Mensagem de depuração
                     if (command.equals("LISTAR")) {
                         // Listar arquivos
                         listFiles(userDir, out);
@@ -89,6 +95,7 @@ public class FileServer {
                     out.println(file.getName());
                 }
             }
+            out.println(""); // Envia uma linha vazia para sinalizar o fim da lista
         }
 
         private void sendFile(File file, OutputStream os) {
